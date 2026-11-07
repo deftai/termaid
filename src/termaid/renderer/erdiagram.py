@@ -273,6 +273,14 @@ def _compute_layout(
         # Rows: the gap below a layer grows to hold one track per relationship
         # that jogs sideways inside it, so their runs never share a row.
         tracks, gap_heights = _assign_gap_tracks(diagram, layer_of, positions, sizes)
+        # A labelled relationship into the next layer needs three rows there: the
+        # cardinality under the upper entity, the label, and the one over the lower
+        # entity. With a tight gap they'd share a row ("1holds").
+        label_rows: dict[int, int] = {}
+        for rel in diagram.relationships:
+            ls, lt = layer_of.get(rel.entity1, -1), layer_of.get(rel.entity2, -2)
+            if rel.label and abs(ls - lt) == 1:
+                label_rows[min(ls, lt)] = 3
         layer_tops: list[int] = []
         row_y = _MARGIN
         for li, layer in enumerate(layers):
@@ -282,7 +290,7 @@ def _compute_layout(
                 x, _ = positions[name]
                 _, h = sizes[name]
                 positions[name] = (x, row_y + (layer_height - h) // 2)
-            row_y += layer_height + max(gap, gap_heights.get(li, 0) + 2)
+            row_y += layer_height + max(gap, gap_heights.get(li, 0) + 2, label_rows.get(li, 0))
         canvas_height = layer_tops[-1] + layer_heights[-1] + _MARGIN
 
         for index, (boundary, offset) in tracks.items():
