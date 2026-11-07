@@ -7,6 +7,7 @@
 
 ### Fixes
 - Flowchart: a back-edge whose target sits beside it (in another column in TD, another row in LR) can now leave from the side facing the target and enter its near side, instead of always looping round the far side. Each such edge is tried both ways and the near side is kept only when the whole drawing scores better (shorter, with no more bends, crossings, shared labelled lines or runs through other subgraphs), so it never pushes another edge into a detour
+- Flowchart: a `>` inside an unquoted square-bracket label, such as `A[x > 0]`, `A[a -> b]` or the `<br/>` in `A[one<br/>two]`, no longer turns the node into an asymmetric (`>text]`) node with a broken id. The label stays on its rectangle and edges reach the right node
 
 ## 0.12.0 (2026-11-06)
 
